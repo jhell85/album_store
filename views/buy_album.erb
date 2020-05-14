@@ -1,0 +1,10 @@
+
+<h1>Buy <%= @album.name() %></h1>
+
+<form action="/albums/<%= @album.id() %>" method="post">
+  <input name="_method" type="hidden" value="patch">
+  <input name="buy" type="hidden" value="true">
+  <button type="submit">Buy</button>
+</form>
+
+<p><a href="/albums">Return to album list</a></p>
