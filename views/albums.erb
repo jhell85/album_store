@@ -4,12 +4,20 @@
 <% if @albums.any? %>
   <ul>
   <% @albums.each do |album| %>
-    <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
+     <% if album.in_inventory == "t" %>
+        <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
+      <% end %>
   <% end %>
   </ul>
 <% else %> 
   <p>There are currently no records to display.</p>
 <% end %>
+<h3>sold albums</h3>
+<% @albums.each do |album| %>
+     <% if album.in_inventory == "f" %>
+        <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
+      <% end %>
+  <% end %>
 
 
 

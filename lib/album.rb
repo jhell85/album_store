@@ -25,7 +25,7 @@ class Album
     @artist = attributes.fetch(:artist)
     @genre = attributes.fetch(:genre)
     @year = attributes.fetch(:year)
-    # @in_inventory = true
+    @in_inventory = attributes.fetch(:in_inventory, true)    
   end
 
   def self.all
@@ -37,7 +37,8 @@ class Album
       artist = album.fetch("artist")
       genre = album.fetch("genre")
       year = album.fetch("year").to_i
-      albums.push(Album.new({name: name, id: id, artist: artist, genre: genre, year: year}))
+      in_inventory = album.fetch("in_inventory")
+      albums.push(Album.new({name: name, id: id, artist: artist, genre: genre, year: year, in_inventory: in_inventory}))
     end
     albums
   end
@@ -47,7 +48,7 @@ class Album
   # end
 
   def save
-    result = DB.exec("INSERT INTO albums (name, artist, genre, year) VALUES ('#{@name}', '#{@artist}', '#{@genre}', '#{@year}') RETURNING id;")
+    result = DB.exec("INSERT INTO albums (name, artist, genre, year, in_inventory) VALUES ('#{@name}', '#{@artist}', '#{@genre}', '#{@year}', '#{@in_inventory}') RETURNING id;")
     @id = result.first().fetch("id").to_i
   end
 
@@ -66,7 +67,8 @@ class Album
     artist = album.fetch("artist")
     genre = album.fetch("genre")
     year = album.fetch("year").to_i
-    Album.new({ name: name, id: id, artist: artist, genre: genre, year: year})
+    in_inventory = album.fetch("in_inventory")
+    Album.new({ name: name, id: id, artist: artist, genre: genre, year: year, in_inventory: in_inventory})
   end
 
   def update(name)
@@ -90,16 +92,14 @@ class Album
   end
 
   def self.sort()
-    # record_list = @@albums.values
     albums = self.all
     sorted_records = albums.sort_by{ |record| record.name }
     sorted_records
   end
  
   def sold()
-    self.in_inventory = false
-    @@albums[self.id] = self
-    # @@sold_albums[self.id] = Album.new(self.name, self.id, self.artist, self.genre, self.year)
+    @in_inventory = false
+    DB.exec("UPDATE albums SET in_inventory = '#{@in_inventory}' WHERE ID = #{@id};")
   end
 
   def songs

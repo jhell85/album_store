@@ -50,6 +50,7 @@ end
 
 get('/albums/:id/buy') do
   @album = Album.find(params[:id].to_i())
+  @album.sold
   erb(:buy_album)
 end
 

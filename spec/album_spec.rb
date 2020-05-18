@@ -104,29 +104,29 @@ describe '#Album' do
     end
   end
 
-  # describe('#sold') do
-  #   it('will remove album from Album.all & put into @@sold_albums ') do
-  #     album = Album.new({:name =>"Giant Steps",:id => nil,:artist => "John Coltrane",:genre=> "Jazz", :year=>"1959"})
-  #     album.save()
-  #     album2 = Album.new({:name => "A Big", :id => nil, :artist => "Johnny Cash", :genre => "Jazz", :year => "1959"})
-  #     album2.save()
-  #     album1 = Album.new({:name => "Little Giant", :id => nil, :artist => "Johnny Griffin", :genre => "Jazz", :year => "1959"})
-  #     album1.save()
-  #     album2.sold()
-  #     expect((Album.find(album2.id)).in_inventory).to(eq(false))
-  #   end
-  # end
+  describe('#sold') do
+    it('will remove album from Album.all & put into @@sold_albums ') do
+      album = Album.new({:name =>"Giant Steps",:id => nil,:artist => "John Coltrane",:genre=> "Jazz", :year=>"1959"})
+      album.save()
+      album2 = Album.new({:name => "A Big", :id => nil, :artist => "Johnny Cash", :genre => "Jazz", :year => "1959"})
+      album2.save()
+      album1 = Album.new({:name => "Little Giant", :id => nil, :artist => "Johnny Griffin", :genre => "Jazz", :year => "1959"})
+      album1.save()
+      album2.sold()
+      expect((Album.find(album2.id)).in_inventory).to(eq("f"))
+    end
+  end
 
-  # describe('#songs') do
-  #   it("returns an album's songs") do
-  #     album = Album.new({:name => "Giant Steps", :id => nil,:artist => "John Coltrane",:genre=> "Jazz", :year => "1959"})
-  #     album.save()
-  #     song = Song.new("Naima", album.id, nil)
-  #     song.save()
-  #     song2 = Song.new("Cousin Mary", album.id, nil)
-  #     song2.save()
-  #     expect(album.songs).to(eq([song, song2]))
-  #   end
-  # end
+  describe('#songs') do
+    it("returns an album's songs") do
+      album = Album.new({:name => "Giant Steps", :id => nil,:artist => "John Coltrane",:genre=> "Jazz", :year => "1959"})
+      album.save()
+      song = Song.new(name: "Naima", album_id: album.id,id: nil)
+      song.save()
+      song2 = Song.new(name: "Cousin Mary",album_id: album.id, id: nil)
+      song2.save()
+      expect(album.songs).to(eq([song, song2]))
+    end
+  end
 
 end
