@@ -2,10 +2,12 @@ require 'pry'
 
 class Album
 
-  attr_reader :id #Our new save method will need reader methods.
-  attr_accessor :name, :artist, :genre, :year, :in_inventory
-  @@albums = {}
-  @@total_rows = 0 # We've added a class variable to keep track of total rows and increment the value when an ALbum is added.
+ 
+  attr_accessor :id, :name, :artist, :genre, :year, :in_inventory
+
+  # form
+  # @@albums = {}
+  # @@total_rows = 0 # We've added a class variable to keep track of total rows and increment the value when an ALbum is added.
   # @@sold_albums = {}
 
   # def initialize(name, id, artist, genre, year)
@@ -19,15 +21,25 @@ class Album
 
   def initialize(attributes)
     @name = attributes.fetch(:name)
-    @id = attributes.fetch(:id) || @@total_rows += 1
+    @id = attributes.fetch(:id)
     @artist = attributes.fetch(:artist)
     @genre = attributes.fetch(:genre)
     @year = attributes.fetch(:year)
-    @in_inventory = true
+    # @in_inventory = true
   end
 
   def self.all
-    @@albums.values()
+    returned_albums = DB.exec("SELECT * FROM albums;")
+    albums = []
+    returned_albums.each() do |album|
+      name = album.fetch("name")
+      id = album.fetch("id").to_i
+      artist = album.fetch("artist")
+      genre = album.fetch("genre")
+      year = album.fetch("year").to_i
+      albums.push(Album.new({name: name, id: id, artist: artist, genre: genre, year: year}))
+    end
+    albums
   end
 
   # def self.all_sold
@@ -35,7 +47,8 @@ class Album
   # end
 
   def save
-    @@albums[self.id] = Album.new({:name => self.name, :id => self.id, :artist => self.artist, :genre => self.genre, :year => self.year})
+    result = DB.exec("INSERT INTO albums (name, artist, genre, year) VALUES ('#{@name}', '#{@artist}', '#{@genre}', '#{@year}') RETURNING id;")
+    @id = result.first().fetch("id").to_i
   end
 
   def ==(album_to_compare)
@@ -43,21 +56,26 @@ class Album
   end
 
   def self.clear
-    @@albums = {}
-    @@total_rows = 0
+    DB.exec("DELETE FROM albums *;")
   end
 
   def self.find(id)
-    @@albums[id]
+    album = DB.exec("SELECT * FROM albums WHERE id = #{id};").first
+    name = album.fetch("name")
+    id = album.fetch("id").to_i
+    artist = album.fetch("artist")
+    genre = album.fetch("genre")
+    year = album.fetch("year").to_i
+    Album.new({ name: name, id: id, artist: artist, genre: genre, year: year})
   end
 
   def update(name)
-    self.name = name
-    @@albums[self.id] = Album.new({:name => self.name, :id => self.id, :artist => self.artist, :genre => self.genre, :year => self.year})
+   @name = name
+   DB.exec("UPDATE albums SET name = '#{@name}' WHERE ID = #{@id};")
   end
 
-  def delete()
-    @@albums.delete(self.id)
+  def delete
+    DB.exec("DELETE FROM albums WHERE id = #{@id};")
   end
 
   def self.search(name)
@@ -72,8 +90,9 @@ class Album
   end
 
   def self.sort()
-    record_list = @@albums.values
-    sorted_records = record_list.sort_by{ |record| record.name }
+    # record_list = @@albums.values
+    albums = self.all
+    sorted_records = albums.sort_by{ |record| record.name }
     sorted_records
   end
  
