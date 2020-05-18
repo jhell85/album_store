@@ -2,12 +2,9 @@
 <h3>Available Records<h3>
 
 <% if @albums.any? %>
-  
   <ul>
   <% @albums.each do |album| %>
-    <% if album.in_inventory == true %>
     <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
-    <% end %>
   <% end %>
   </ul>
 <% else %> 

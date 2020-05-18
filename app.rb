@@ -34,12 +34,10 @@ get('/albums/search/results') do
 end
 
 post('/albums') do ## Adds album to list of albums, cannot access in URL bar
-  name = params[:album_name]
-  artist = params[:album_artist]
-  year = params[:album_year]
-  genre = params[:album_genre]
-  song = params[:song_id]
-  in_inventory = params[:in_inventory]
+  name = (params[:album_name] != "" ? params[:album_name] : "no data available")
+  artist = (params[:album_artist] != "" ? params[:album_artist] : "no data available")
+  year = (params[:album_year] != "" ? params[:album_year] : 0)
+  genre = (params[:album_genre] != "" ? params[:album_genre] : "no data available")
   album = Album.new({:name => name, :id => nil, :artist => artist, :genre => genre, :year => year})
   album.save()
   redirect to('/albums')
@@ -90,7 +88,9 @@ end
 # Post a new song. After the song is added, Sinatra will route to the view for the album the song belongs to.
 post('/albums/:id/songs') do
   @album = Album.find(params[:id].to_i())
-  song = Song.new(params[:song_name], @album.id, nil)
+  name = params[:song_name]
+  album_id = @album.id
+  song = Song.new({name: name, id: nil, album_id: album_id})
   song.save()
   erb(:album)
 end
